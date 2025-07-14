@@ -17,7 +17,7 @@ export default function Transactions() {
   const fetchTransactions = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:8000/api/v1/dashboard", {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_URL}/api/v1/dashboard`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTransactions(res.data.recentTransactions);

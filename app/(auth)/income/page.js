@@ -49,7 +49,7 @@ export default function IncomePage() {
   const fetchIncome = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:8000/api/v1/income/get", {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_URL}/api/v1/income/get`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setIncomeData(res.data);
@@ -65,7 +65,7 @@ export default function IncomePage() {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      await axios.post("http://localhost:8000/api/v1/income/add", newIncome, {
+      await axios.post(`${process.env.NEXT_PUBLIC_URL}/api/v1/income/add`, newIncome, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setModalOpen(false);
@@ -79,7 +79,7 @@ export default function IncomePage() {
     try {
       const token = localStorage.getItem("token");
       await axios.delete(
-        `http://localhost:8000/api/v1/income/${incomeToDelete}`,
+        `${process.env.NEXT_PUBLIC_URL}/api/v1/income/${incomeToDelete}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -92,12 +92,11 @@ export default function IncomePage() {
     }
   };
 
-  // ✅ Download Excel
   const handleDownload = async () => {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.get(
-        "http://localhost:8000/api/v1/income/downloadexcel",
+        `${process.env.NEXT_PUBLIC_URL}/api/v1/income/downloadexcel`,
         {
           headers: { Authorization: `Bearer ${token}` },
           responseType: "blob",

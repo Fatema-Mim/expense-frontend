@@ -40,7 +40,7 @@ export default function Expenses() {
   const fetchExpenses = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:8000/api/v1/expense/get", {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_URL}/api/v1/expense/get`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setExpenseData(res.data);
@@ -55,7 +55,7 @@ export default function Expenses() {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      await axios.post("http://localhost:8000/api/v1/expense/add", newExpense, {
+      await axios.post(`${process.env.NEXT_PUBLIC_URL}/api/v1/expense/add`, newExpense, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setModalOpen(false);
@@ -68,7 +68,7 @@ export default function Expenses() {
   const confirmDelete = async () => {
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:8000/api/v1/expense/${expenseToDelete}`, {
+      await axios.delete(`${process.env.NEXT_PUBLIC_URL}/api/v1/expense/${expenseToDelete}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchExpenses();
@@ -82,7 +82,7 @@ export default function Expenses() {
   const handleDownload = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:8000/api/v1/expense/downloadexcel", {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_URL}/api/v1/expense/downloadexcel`, {
         headers: { Authorization: `Bearer ${token}` },
         responseType: "blob",
       });
