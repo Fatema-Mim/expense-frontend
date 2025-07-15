@@ -12,6 +12,8 @@ import {
 } from "react-icons/fa";
 import ReusableFormModal from "@/components/ReusableFormModal";
 import ConfirmModal from "@/components/ConfirmModal";
+import NoData from "@/components/NoData";
+import Loading from "@/components/Loading";
 
 export default function IncomePage() {
   const [incomeData, setIncomeData] = useState([]);
@@ -46,51 +48,57 @@ export default function IncomePage() {
     fetchIncome();
   }, []);
 
-  const fetchIncome = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await axios.get(`${process.env.NEXT_PUBLIC_URL}/api/v1/income/get`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setIncomeData(res.data);
-    } catch (err) {
-      setError("Failed to fetch income");
-    } finally {
-      setLoading(false);
-    }
-  };
+ const fetchIncome = async () => {
+  setLoading(true); 
+  try {
+    const token = localStorage.getItem("token");
+    const res = await axios.get(`${process.env.NEXT_PUBLIC_URL}/api/v1/income/get`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setIncomeData(res.data);
+  } catch (err) {
+    setError("Failed to fetch income");
+  } finally {
+    setLoading(false);
+  }
+};
 
-  // ✅ Add new income
-  const handleAddIncome = async (e) => {
-    e.preventDefault();
-    try {
-      const token = localStorage.getItem("token");
-      await axios.post(`${process.env.NEXT_PUBLIC_URL}/api/v1/income/add`, newIncome, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setModalOpen(false);
-      fetchIncome();
-    } catch (err) {
-      alert("Failed to add income");
-    }
-  };
+const handleAddIncome = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  try {
+    const token = localStorage.getItem("token");
+    await axios.post(`${process.env.NEXT_PUBLIC_URL}/api/v1/income/add`, newIncome, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setModalOpen(false);
+    await fetchIncome(); 
+  } catch (err) {
+    alert("Failed to add income");
+  } finally {
+    setLoading(false); 
+  }
+};
 
-  const confirmDelete = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      await axios.delete(
-        `${process.env.NEXT_PUBLIC_URL}/api/v1/income/${incomeToDelete}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      fetchIncome();
-    } catch (err) {
-      alert("Failed to delete income");
-    } finally {
-      setIncomeToDelete(null);
-    }
-  };
+const confirmDelete = async () => {
+  setLoading(true);           
+  try {
+    const token = localStorage.getItem("token");
+    await axios.delete(`${process.env.NEXT_PUBLIC_URL}/api/v1/income/${incomeToDelete}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    await fetchIncome();     
+    setConfirmOpen(false);    
+    setIncomeToDelete(null); 
+  } catch (err) {
+    alert("Failed to delete income");
+  } finally {
+    setLoading(false);        
+  }
+};
+
+
+
 
   const handleDownload = async () => {
     try {
@@ -136,10 +144,10 @@ export default function IncomePage() {
         </div>
       </div>
 
-      {loading && <p>Loading...</p>}
+      {loading && <Loading />}
       {error && <p className="text-red-500">{error}</p>}
       {incomeData.length === 0 && !loading && (
-        <p className="text-sm text-gray-500">No income data found.</p>
+        <NoData message="No income data found. Add your income to see them here." />
       )}
 
       <ul className="space-y-4">
@@ -155,7 +163,7 @@ export default function IncomePage() {
               <div>
                 <div className="text-sm font-semibold">{item.source}</div>
                 <div className="text-xs text-gray-500">
-                  {dayjs(item.date).format("Do MMM YYYY")}
+                  {dayjs(item.date).format("D MMM YYYY")}
                 </div>
               </div>
             </div>
@@ -197,6 +205,7 @@ export default function IncomePage() {
         onConfirm={confirmDelete}
         title="Confirm Deletion"
         message="Are you sure you want to delete this income entry? This action cannot be undone."
+        loading={loading}
       />
     </div>
   );

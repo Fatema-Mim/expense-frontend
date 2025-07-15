@@ -7,23 +7,28 @@ import FinancePieChart from "@/components/FinancePieChart";
 import Last60DaysIncome from "@/components/Last60DaysIncome";
 import BarChartCard from "@/components/BarChartCard";
 import Last30DaysExpense from "@/components/Last30DaysExpense";
+import NoData from "@/components/NoData";
+import Loading from "@/components/Loading";
 
 export default function Dashboard() {
   const [data, setData] = useState(null);
   const [fullname, setFullname] = useState("");
 
   useEffect(() => {
-    const token = localStorage.getItem("token");  
+    const token = localStorage.getItem("token");
     const name = localStorage.getItem("fullname");
     setFullname(name || "User");
 
     const fetchData = async () => {
       try {
-        const res = await axios.get(`${process.env.NEXT_PUBLIC_URL}/api/v1/dashboard`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const res = await axios.get(
+          `${process.env.NEXT_PUBLIC_URL}/api/v1/dashboard`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         setData(res.data);
       } catch (err) {
         console.error("Error fetching dashboard data:", err);
@@ -33,7 +38,19 @@ export default function Dashboard() {
     fetchData();
   }, []);
 
-  if (!data) return <p className="p-4">Loading...</p>;
+  if (!data) return <Loading />;
+
+  const noData = data.totalIncome === 0 && data.totalExpense === 0;
+
+ if (noData)
+  return (
+    <NoData message="Add your income and expenses to see your financial overview here." />
+  );
+
+
+  const loan = Math.max(0, data.totalExpense - data.totalIncome);
+  const balance = data.totalIncome - data.totalExpense;
+  const hasLoan = loan > 0;
 
   return (
     <div className="p-4 space-y-6">
@@ -42,7 +59,10 @@ export default function Dashboard() {
       </h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card title="Total Balance" amount={data.totalBalance} />
+        <Card
+          title={hasLoan ? "Loan" : "Total Balance"}
+          amount={hasLoan ? loan : balance}
+        />
         <Card title="Total Income" amount={data.totalIncome} />
         <Card title="Total Expense" amount={data.totalExpense} />
       </div>
@@ -55,6 +75,7 @@ export default function Dashboard() {
           expense={data.totalExpense}
         />
       </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Last60DaysIncome transactions={data.last60DaysIncome.transactions} />
         <BarChartCard

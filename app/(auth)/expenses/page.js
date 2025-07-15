@@ -12,6 +12,8 @@ import {
 } from "react-icons/fa";
 import ReusableFormModal from "@/components/ReusableFormModal";
 import ConfirmModal from "@/components/ConfirmModal";
+import NoData from "@/components/NoData";
+import Loading from "@/components/Loading";
 
 export default function Expenses() {
   const [expenseData, setExpenseData] = useState([]);
@@ -38,6 +40,7 @@ export default function Expenses() {
   }, []);
 
   const fetchExpenses = async () => {
+    setLoading(true); 
     try {
       const token = localStorage.getItem("token");
       const res = await axios.get(`${process.env.NEXT_PUBLIC_URL}/api/v1/expense/get`, {
@@ -51,33 +54,41 @@ export default function Expenses() {
     }
   };
 
-  const handleAddExpense = async (e) => {
-    e.preventDefault();
-    try {
-      const token = localStorage.getItem("token");
-      await axios.post(`${process.env.NEXT_PUBLIC_URL}/api/v1/expense/add`, newExpense, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setModalOpen(false);
-      fetchExpenses();
-    } catch (err) {
-      alert("Failed to add expense");
-    }
-  };
+const handleAddExpense = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  try {
+    const token = localStorage.getItem("token");
+    await axios.post(`${process.env.NEXT_PUBLIC_URL}/api/v1/expense/add`, newExpense, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setModalOpen(false);
+    await fetchExpenses();  
+  } catch (err) {
+    alert("Failed to add expense");
+  } finally {
+    setLoading(false);
+  }
+};
 
-  const confirmDelete = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      await axios.delete(`${process.env.NEXT_PUBLIC_URL}/api/v1/expense/${expenseToDelete}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      fetchExpenses();
-    } catch (err) {
-      alert("Failed to delete expense");
-    } finally {
-      setExpenseToDelete(null);
-    }
-  };
+
+ const confirmDelete = async () => {
+  setLoading(true);
+  try {
+    const token = localStorage.getItem("token");
+    await axios.delete(`${process.env.NEXT_PUBLIC_URL}/api/v1/expense/${expenseToDelete}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    await fetchExpenses();
+    setConfirmOpen(false);  
+    setExpenseToDelete(null);
+  } catch (err) {
+    alert("Failed to delete expense");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleDownload = async () => {
     try {
@@ -118,10 +129,10 @@ export default function Expenses() {
         </div>
       </div>
 
-      {loading && <p>Loading...</p>}
+      {loading && <Loading />}
       {error && <p className="text-red-500">{error}</p>}
       {expenseData.length === 0 && !loading && (
-        <p className="text-sm text-gray-500">No expense data found.</p>
+       <NoData message="No expense data found. Add your expenses to see them here." />
       )}
 
       <ul className="space-y-4">
@@ -137,7 +148,7 @@ export default function Expenses() {
               <div>
                 <div className="text-sm font-semibold">{item.category}</div>
                 <div className="text-xs text-gray-500">
-                  {dayjs(item.date).format("Do MMM YYYY")}
+                  {dayjs(item.date).format("D MMM YYYY")}
                 </div>
               </div>
             </div>
@@ -179,6 +190,7 @@ export default function Expenses() {
         onConfirm={confirmDelete}
         title="Confirm Deletion"
         message="Are you sure you want to delete this expense entry? This action cannot be undone."
+        loading={loading}
       />
     </div>
   );

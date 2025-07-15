@@ -15,11 +15,16 @@ export default function LoginPage() {
     handleSubmit,
     formState: { errors },
   } = useForm();
+
   const [showPassword, setShowPassword] = useState(false);
   const [serverError, setServerError] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const onSubmit = async (data) => {
+    setLoading(true);
+    setServerError("");
+
     try {
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_URL}/api/v1/auth/login`,
@@ -28,20 +33,20 @@ export default function LoginPage() {
       const token = res.data.token;
       const fullname = res.data.user.fullname;
 
-      // Save to localStorage
       localStorage.setItem("token", token);
       localStorage.setItem("fullname", fullname);
 
-      router.push("/dashboard"); // ✅ Redirect after login
+      router.push("/dashboard");
     } catch (err) {
       const message = err.response?.data?.message || "Login failed";
       setServerError(message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
-      {/* Left - Form */}
       <div className="w-full md:w-1/2 flex flex-col justify-center items-center px-4 py-12">
         <div className="w-full max-w-md">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">
@@ -58,7 +63,6 @@ export default function LoginPage() {
           )}
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {/* Email */}
             <div className="relative">
               <FaEnvelope className="absolute top-3 left-3 text-gray-400" />
               <input
@@ -72,7 +76,6 @@ export default function LoginPage() {
               )}
             </div>
 
-            {/* Password */}
             <div className="relative">
               <FaLock className="absolute top-3 left-3 text-gray-400" />
               <input
@@ -99,9 +102,14 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+              disabled={loading}
+              className={`w-full py-2 rounded text-white cursor-pointer ${
+                loading
+                  ? "bg-blue-400 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700"
+              }`}
             >
-              Login
+              {loading ? "Login..." : "Login"}
             </button>
           </form>
 
@@ -114,7 +122,6 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Right - Illustration */}
       <div className="hidden md:flex w-1/2 items-center justify-center bg-purple-100">
         <Image
           src={auth}

@@ -1,7 +1,15 @@
-// components/ConfirmModal.jsx
+"use client";
+
 import { FaExclamationTriangle } from "react-icons/fa";
 
-export default function ConfirmModal({ isOpen, onClose, onConfirm, title, message }) {
+export default function ConfirmModal({
+  isOpen,
+  onClose,
+  onConfirm,
+  title,
+  message,
+  loading = false, // add loading prop with default false
+}) {
   if (!isOpen) return null;
 
   return (
@@ -17,20 +25,45 @@ export default function ConfirmModal({ isOpen, onClose, onConfirm, title, messag
           <button
             className="px-4 py-1.5 cursor-pointer bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
             onClick={onClose}
+            disabled={loading}
           >
             Cancel
           </button>
           <button
-            className="px-4 cursor-pointer py-1.5 bg-red-500 text-white rounded hover:bg-red-600"
-            onClick={() => {
-              onConfirm();
-              onClose();
-            }}
+            className={`px-4 cursor-pointer py-1.5 rounded text-white ${
+              loading ? "bg-red-400 cursor-not-allowed" : "bg-red-500 hover:bg-red-600"
+            }`}
+            onClick={onConfirm}
+            disabled={loading}
           >
-            Yes, Delete
+            {loading ? (
+              <svg
+                className="animate-spin h-5 w-5 mx-auto"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                ></path>
+              </svg>
+            ) : (
+              "Yes, Delete"
+            )}
           </button>
         </div>
       </div>
     </div>
   );
 }
+

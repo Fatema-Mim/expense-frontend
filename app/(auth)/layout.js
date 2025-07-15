@@ -2,23 +2,39 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import Navbar from "@/components/Navbar";
+import Sidebar from "@/components/Sidebar";
 
-export default function Layout({ children }) {
+export default function AuthLayout({ children }) {
   const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState(null); // null = checking
+  const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
-      router.push("/login");
+      router.replace("/login");
     } else {
       setIsAuthenticated(true);
     }
+    setLoading(false);
   }, []);
 
-  if (isAuthenticated === null) {
-    return null;
+  if (loading) {
+    return <p>Loading...</p>; // Or a proper spinner component
   }
 
-  return <>{children}</>;
+  if (!isAuthenticated) {
+    return null; // Or redirecting to login page
+  }
+
+  return (
+    <>
+      <Navbar />
+      <div className="flex">
+        <Sidebar />
+        <main className="flex-grow p-6">{children}</main>
+      </div>
+    </>
+  );
 }

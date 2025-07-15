@@ -1,3 +1,57 @@
+
+# Project Folder Structure
+
+```
+frontend/
+├── app/
+│   ├── favicon.ico
+│   ├── globals.css
+│   ├── layout.js
+│   ├── page.js
+│   ├── (auth)/
+│   │   ├── layout.js
+│   │   ├── dashboard/
+│   │   │   └── page.js
+│   │   ├── expenses/
+│   │   │   └── page.js
+│   │   ├── income/
+│   │   │   └── page.js
+│   │   └── transactions/
+│   │       └── page.js
+│   ├── (guest)/
+│   │   ├── login/
+│   │   │   └── page.js
+│   │   └── register/
+│   │       └── page.js
+│   └── image/
+│       └── auth.png
+├── components/
+│   ├── BarChartCard.jsx
+│   ├── Card.jsx
+│   ├── ConfirmModal.jsx
+│   ├── CustomTooltip.jsx
+│   ├── FinancePieChart.jsx
+│   ├── Last30DaysExpense.jsx
+│   ├── Last60DaysIncome.jsx
+│   ├── LayoutWrapper.jsx
+│   ├── Navbar.jsx
+│   ├── RecentTransactions.jsx
+│   ├── ReusableFormModal.jsx
+│   └── Sidebar.jsx
+├── public/
+│   ├── file.svg
+│   ├── globe.svg
+│   ├── next.svg
+│   ├── vercel.svg
+│   └── window.svg
+├── eslint.config.mjs
+├── jsconfig.json
+├── next.config.mjs
+├── package.json
+├── postcss.config.mjs
+└── README.md
+```
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started

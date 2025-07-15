@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
 import { FaArrowUp, FaArrowDown, FaMoneyCheckAlt } from "react-icons/fa";
+import Loading from "@/components/Loading";
 
 export default function Transactions() {
   const [transactions, setTransactions] = useState([]);
@@ -32,7 +33,7 @@ export default function Transactions() {
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4 text-gray-800">All Transactions</h1>
 
-      {loading && <p>Loading...</p>}
+      {loading && <Loading />}
       {error && <p className="text-red-500">{error}</p>}
       {!loading && transactions.length === 0 && (
         <p className="text-gray-500 text-sm">No transactions found.</p>

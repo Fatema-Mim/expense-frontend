@@ -20,9 +20,13 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [serverError, setServerError] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const onSubmit = async (data) => {
+    setLoading(true);
+    setServerError("");
+
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_URL}/api/v1/auth/register`,
@@ -38,11 +42,12 @@ export default function RegisterPage() {
 
       localStorage.setItem("token", token);
       localStorage.setItem("fullname", fullname);
-      router.push("/dashboard"); 
+      router.push("/dashboard");
     } catch (err) {
-      console.error("Registration failed:", err);
       const message = err.response?.data?.message || "Registration failed";
       setServerError(message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -97,6 +102,11 @@ export default function RegisterPage() {
                 {...register("password", {
                   required: "Password is required",
                   minLength: { value: 6, message: "Min 6 characters" },
+                  pattern: {
+                    value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/,
+                    message:
+                      "Use uppercase, lowercase, number & special character",
+                  },
                 })}
               />
               <div
@@ -139,9 +149,14 @@ export default function RegisterPage() {
 
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+              disabled={loading}
+              className={`w-full py-2 rounded text-white cursor-pointer ${
+                loading
+                  ? "bg-blue-400 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700"
+              }`}
             >
-              Register
+              {loading ? "Registering..." : "Register"}
             </button>
           </form>
 
