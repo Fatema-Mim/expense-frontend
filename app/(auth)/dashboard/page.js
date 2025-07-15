@@ -9,6 +9,7 @@ import BarChartCard from "@/components/BarChartCard";
 import Last30DaysExpense from "@/components/Last30DaysExpense";
 import NoData from "@/components/NoData";
 import Loading from "@/components/Loading";
+import LoadingPage from "@/components/LoadingPage";
 
 export default function Dashboard() {
   const [data, setData] = useState(null);
@@ -38,7 +39,7 @@ export default function Dashboard() {
     fetchData();
   }, []);
 
-  if (!data) return <Loading />;
+  if (!data) return <LoadingPage />;
 
   const noData = data.totalIncome === 0 && data.totalExpense === 0;
 

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
+import LayoutWrapper from "@/components/LayoutWrapper";
 
 export default function AuthLayout({ children }) {
   const router = useRouter();
@@ -30,11 +31,7 @@ export default function AuthLayout({ children }) {
 
   return (
     <>
-      <Navbar />
-      <div className="flex">
-        <Sidebar />
-        <main className="flex-grow p-6">{children}</main>
-      </div>
+     <LayoutWrapper>{children}</LayoutWrapper>
     </>
   );
 }

@@ -12,10 +12,8 @@ export default function Loading() {
   }, []);
 
   return (
-   <div className="fixed z-50 h-screen w-screen top-0 left-0  ">
-     <p className="text-lg font-medium text-gray-700 select-none">
+   <p className="text-lg font-medium text-gray-700 select-none">
       Loading{dots}
     </p>
-   </div>
   );
 }
